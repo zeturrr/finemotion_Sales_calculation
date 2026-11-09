@@ -162,8 +162,8 @@ if st.button('Start'):
 
     print("ログイン処理開始")
     try:
-        driver.find_element_by_xpath("/html/body/div[2]/form/table/tbody/tr[2]/td/table/tbody/tr[1]/td[2]/input").send_keys("mutou")
-        driver.find_element_by_xpath("/html/body/div[2]/form/table/tbody/tr[2]/td/table/tbody/tr[2]/td[2]/input").send_keys("mutou")
+        driver.find_element_by_xpath("/html/body/div[2]/form/table/tbody/tr[2]/td/table/tbody/tr[1]/td[2]/input").send_keys("goto")
+        driver.find_element_by_xpath("/html/body/div[2]/form/table/tbody/tr[2]/td/table/tbody/tr[2]/td[2]/input").send_keys("Axwiorcy517xr")
         driver.find_element_by_xpath("/html/body/div[2]/form/table/tbody/tr[4]/td/input").click()
         print("ログイン処理完了")
     except Exception as e:
