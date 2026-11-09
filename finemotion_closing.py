@@ -4,6 +4,7 @@ from selenium.webdriver.chrome.options import Options
 from helium import set_driver, go_to
 import requests
 import os
+import shutil
 import sys
 import importlib
 from webdriver_manager.chrome import ChromeDriverManager
@@ -38,13 +39,11 @@ def generate_webdriver():
     print("=== generate_webdriver START ===")
     driver = None
     try:
-        if os.environ.get("HEROKU"):
-            print("HEROKU環境検出。CHROMEDRIVER_PATHとGOOGLE_CHROME_BINを使用します。")
-            print("GOOGLE_CHROME_BIN:", os.environ.get("GOOGLE_CHROME_BIN"))
-            print("CHROMEDRIVER_PATH:", os.environ.get("CHROMEDRIVER_PATH"))
+        if os.environ.get("HEROKU") or os.environ.get("DYNO"):
+            print("Heroku Chrome for Testing detected.")
             
             options = Options()
-            options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+            options.binary_location = shutil.which("chrome")
             options.add_argument("--headless")
             options.add_argument("--disable-dev-shm-usage")
             options.add_argument("--no-sandbox")
@@ -52,9 +51,9 @@ def generate_webdriver():
             options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36")
             options.add_argument('window-size=1920x1080')
 
-            chromedriver_path = os.environ.get("CHROMEDRIVER_PATH")
-            print("CHROMEDRIVER_PATHへのchmod実行")
-            os.chmod(chromedriver_path, 0o755)
+            chromedriver_path = shutil.which("chromedriver")
+            if not options.binary_location or not chromedriver_path:
+                raise RuntimeError("Chrome for Testing or ChromeDriver is missing from PATH")
 
             driver = webdriver.Chrome(options=options, executable_path=chromedriver_path)
             print("Heroku環境でのwebdriver起動成功")
@@ -94,6 +93,8 @@ def generate_webdriver():
             print("ローカル環境でのwebdriver起動成功")
 
     except Exception as e:
+        if os.environ.get("HEROKU") or os.environ.get("DYNO"):
+            raise
         print(f"Error occurred in generate_webdriver: {e}")
         print("webdriver_managerで再度chromedriver取得を試みます...")
         driver_path = ChromeDriverManager().install()
